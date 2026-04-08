@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartComplaints — Track</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">Smart<span class="gold">Complaints</span></span>
+    </div>
+    <nav class="nav">
+      <a href="/" class="nav-link">Submit</a>
+      <a href="/track" class="nav-link active">Track</a>
+      <a href="/admin" class="nav-link">Worker Portal</a>
+    </nav>
+    <div class="server-badge">
+      <span class="dot green-dot"></span> Server 1 — Customer Portal
+    </div>
+  </div>
+</header>
+
+<section class="track-page">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="track-wrapper">
+
+    <!-- Search Box -->
+    <div class="track-search-card fade-up">
+      <div class="card-top-line"></div>
+      <div class="label-tag">🔍 Real-Time Tracking</div>
+      <h1 class="track-title">Track Your Complaint</h1>
+      <p class="track-sub">Enter your Complaint ID to see its current status and worker response from Server 2.</p>
+
+      <form action="/track" method="GET" class="track-search-form">
+        <input
+          type="text"
+          name="id"
+          placeholder="Enter Complaint ID  e.g. CMP-A3F9"
+          value="{{ searched_id or '' }}"
+          required
+        />
+        <button type="submit" class="btn-primary">Search →</button>
+      </form>
+    </div>
+
+    <!-- Error Message -->
+    {% if error %}
+    <div class="alert-box alert-error fade-up">
+      <span>❌</span>
+      <div>
+        <strong>Not Found</strong>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Complaint Result -->
+    {% if complaint %}
+    <div class="complaint-result fade-up">
+      <div class="card-top-line"></div>
+
+      <!-- Header Row -->
+      <div class="result-header">
+        <div>
+          <div class="complaint-id-display">{{ complaint.id }}</div>
+          <div class="result-timestamp">Submitted: {{ complaint.timestamp }}</div>
+        </div>
+        <div>
+          {% if complaint.status == 'Resolved' %}
+            <span class="status-badge status-resolved">✅ Resolved</span>
+          {% elif complaint.status == 'In Progress' %}
+            <span class="status-badge status-progress">🔄 In Progress</span>
+          {% else %}
+            <span class="status-badge status-open">🔴 Open</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Progress Tracker -->
+      <div class="progress-track">
+        <div class="progress-step {% if complaint.status in ['Open','In Progress','Resolved'] %}done{% endif %}">
+          <div class="ps-circle">1</div>
+          <div class="ps-label">Submitted</div>
+        </div>
+        <div class="progress-line {% if complaint.status in ['In Progress','Resolved'] %}active{% endif %}"></div>
+        <div class="progress-step {% if complaint.status in ['In Progress','Resolved'] %}done{% endif %}">
+          <div class="ps-circle">2</div>
+          <div class="ps-label">In Review</div>
+        </div>
+        <div class="progress-line {% if complaint.status == 'Resolved' %}active{% endif %}"></div>
+        <div class="progress-step {% if complaint.status == 'Resolved' %}done{% endif %}">
+          <div class="ps-circle">3</div>
+          <div class="ps-label">Responded</div>
+        </div>
+        <div class="progress-line {% if complaint.status == 'Resolved' %}active{% endif %}"></div>
+        <div class="progress-step {% if complaint.status == 'Resolved' %}done{% endif %}">
+          <div class="ps-circle">4</div>
+          <div class="ps-label">Resolved</div>
+        </div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-label">Customer Name</div>
+          <div class="detail-value">{{ complaint.name }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">{{ complaint.email }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Phone</div>
+          <div class="detail-value">{{ complaint.phone or '—' }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Category</div>
+          <div class="detail-value">{{ complaint.category }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Priority</div>
+          <div class="detail-value">
+            {% if complaint.priority == 'High' %}
+              <span class="badge badge-high">🔴 High</span>
+            {% elif complaint.priority == 'Medium' %}
+              <span class="badge badge-med">🟡 Medium</span>
+            {% else %}
+              <span class="badge badge-low">🟢 Low</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Server</div>
+          <div class="detail-value">Server 1 → Server 2</div>
+        </div>
+      </div>
+
+      <!-- Subject + Description -->
+      <div class="subject-box">
+        <div class="detail-label">Subject</div>
+        <div class="detail-value" style="font-size:1rem;color:var(--white)">{{ complaint.subject }}</div>
+      </div>
+      <div class="subject-box" style="margin-top:1rem">
+        <div class="detail-label">Description</div>
+        <div class="detail-value" style="line-height:1.7">{{ complaint.description }}</div>
+      </div>
+
+      <!-- Worker Response Box -->
+      <div class="response-box">
+        <div class="response-header">
+          <span class="response-icon">🖥️</span>
+          <div>
+            <div class="response-title">Worker Response <span style="font-size:0.75rem;color:var(--muted)">(from Server 2)</span></div>
+          </div>
+        </div>
+        {% if complaint.response and complaint.response != 'Pending' %}
+          <div class="response-text">{{ complaint.response }}</div>
+        {% else %}
+          <div class="response-pending">
+            <div class="pending-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <p>Awaiting response from the worker team on Server 2. Please check back shortly.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="result-actions">
+        <a href="/" class="btn-outline">Submit New Complaint</a>
+        <a href="/track" class="btn-outline">Search Another</a>
+      </div>
+
+    </div>
+    {% endif %}
+
+    <!-- Empty State (no search yet) -->
+    {% if not complaint and not error and not searched_id %}
+    <div class="empty-state fade-up">
+      <div class="empty-icon">🔍</div>
+      <h3>Enter your Complaint ID above</h3>
+      <p>You received your ID on the success page after submitting a complaint. It looks like <strong>CMP-XXXX</strong>.</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2024 <span class="gold">SmartComplaints</span> — Cloud Computing Project &nbsp;·&nbsp; Flask + Python</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartComplaints — Worker Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body class="admin-body">
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">Smart<span class="gold">Complaints</span></span>
+    </div>
+    <div class="server-chip">
+      <span class="dot green-dot"></span> Server 2 — Worker Portal
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Main</div>
+    <a href="/admin" class="sidebar-link active">📊 Dashboard</a>
+    <a href="/admin?filter=All" class="sidebar-link">📋 All Complaints <span class="nav-count">{{ total }}</span></a>
+    <a href="/admin?filter=Open" class="sidebar-link">🔴 Open <span class="nav-count red">{{ open_count }}</span></a>
+    <a href="/admin?filter=In Progress" class="sidebar-link">🔄 In Progress <span class="nav-count blue">{{ inprog }}</span></a>
+    <a href="/admin?filter=Resolved" class="sidebar-link">✅ Resolved <span class="nav-count green">{{ resolved }}</span></a>
+
+    <div class="nav-group-label" style="margin-top:1.5rem">Navigation</div>
+    <a href="/" class="sidebar-link">🖥️ Server 1 Portal</a>
+    <a href="/track" class="sidebar-link">🔍 Track Complaint</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="worker-card">
+      <div class="worker-avatar">AK</div>
+      <div>
+        <div class="worker-name">Admin Kumar</div>
+        <div class="worker-role">Senior Worker · Server 2</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="admin-main">
+
+  <!-- Topbar -->
+  <div class="admin-topbar">
+    <div>
+      <h2 class="topbar-title">Worker Dashboard</h2>
+      <p class="topbar-sub">Server 2 &nbsp;·&nbsp; Manage and respond to all complaints</p>
+    </div>
+    <div class="topbar-right">
+      <form action="/track" method="GET" class="topbar-search">
+        <span>🔍</span>
+        <input type="text" name="id" placeholder="Search by Complaint ID…"/>
+        <button type="submit">Go</button>
+      </form>
+      <a href="/" class="btn-outline small">+ New Complaint</a>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="admin-content">
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-gold">
+        <div class="kpi-top"><span class="kpi-label">Total Complaints</span><span class="kpi-icon">📋</span></div>
+        <div class="kpi-value">{{ total }}</div>
+        <div class="kpi-sub">All time records</div>
+      </div>
+      <div class="kpi-card kpi-red">
+        <div class="kpi-top"><span class="kpi-label">Open / Pending</span><span class="kpi-icon">🔴</span></div>
+        <div class="kpi-value">{{ open_count }}</div>
+        <div class="kpi-sub">Needs attention</div>
+      </div>
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-top"><span class="kpi-label">In Progress</span><span class="kpi-icon">🔄</span></div>
+        <div class="kpi-value">{{ inprog }}</div>
+        <div class="kpi-sub">Being handled</div>
+      </div>
+      <div class="kpi-card kpi-green">
+        <div class="kpi-top"><span class="kpi-label">Resolved</span><span class="kpi-icon">✅</span></div>
+        <div class="kpi-value">{{ resolved }}</div>
+        <div class="kpi-sub">Successfully closed</div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-row">
+      <div class="filter-tabs">
+        <a href="/admin?filter=All"         class="filter-tab {% if status_filter=='All' %}active{% endif %}">All ({{ total }})</a>
+        <a href="/admin?filter=Open"        class="filter-tab {% if status_filter=='Open' %}active{% endif %}">Open ({{ open_count }})</a>
+        <a href="/admin?filter=In Progress" class="filter-tab {% if status_filter=='In Progress' %}active{% endif %}">In Progress ({{ inprog }})</a>
+        <a href="/admin?filter=Resolved"    class="filter-tab {% if status_filter=='Resolved' %}active{% endif %}">Resolved ({{ resolved }})</a>
+      </div>
+    </div>
+
+    <!-- Complaints Table -->
+    <div class="table-card">
+      <div class="table-header">
+        <div>
+          <div class="table-title">Incoming Complaints</div>
+          <div class="table-sub">From Server 1 Customer Portal · Showing: {{ status_filter }}</div>
+        </div>
+      </div>
+
+      {% if complaints %}
+      <div class="table-scroll">
+        <table class="complaints-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Category</th>
+              <th>Subject</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in complaints %}
+            <tr>
+              <td><span class="cid">{{ c.id }}</span></td>
+              <td>
+                <div class="cust-cell">
+                  <div class="cust-avatar">{{ c.name[0].upper() }}</div>
+                  <div>
+                    <div class="cust-name">{{ c.name }}</div>
+                    <div class="cust-email">{{ c.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="muted-text">{{ c.category }}</td>
+              <td class="subject-text">{{ c.subject[:40] }}{% if c.subject|length > 40 %}…{% endif %}</td>
+              <td>
+                {% if c.priority == 'High' %}
+                  <span class="pdot p-high">● High</span>
+                {% elif c.priority == 'Medium' %}
+                  <span class="pdot p-med">● Medium</span>
+                {% else %}
+                  <span class="pdot p-low">● Low</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if c.status == 'Resolved' %}
+                  <span class="badge badge-resolved">✅ Resolved</span>
+                {% elif c.status == 'In Progress' %}
+                  <span class="badge badge-progress">🔄 In Progress</span>
+                {% else %}
+                  <span class="badge badge-open">🔴 Open</span>
+                {% endif %}
+              </td>
+              <td class="muted-text small-text">{{ c.timestamp }}</td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn-respond"
+                    onclick="openModal('{{ c.id }}','{{ c.name }}','{{ c.status }}','{{ c.response|replace("'","") }}')">
+                    Respond
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-table">
+        <div class="empty-icon">📭</div>
+        <h3>No complaints found</h3>
+        <p>No complaints match the current filter: <strong>{{ status_filter }}</strong></p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div><!-- /admin-content -->
+</div><!-- /admin-main -->
+
+<!-- ── RESPOND MODAL ── -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="card-top-line"></div>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 class="modal-title">Send Response</h2>
+    <p class="modal-sub">Responding to <strong id="modalId"></strong> — <span id="modalName"></span></p>
+
+    <form action="" method="POST" id="respondForm">
+      <div class="field" style="margin-bottom:1rem">
+        <label>Update Status</label>
+        <select name="status" id="statusSelect">
+          <option value="Open">Open</option>
+          <option value="In Progress" selected>In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Response Message</label>
+        <textarea name="response" id="responseText" rows="5"
+          placeholder="Type your response to the customer. Be clear and empathetic…" required></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Send Response →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+  function openModal(id, name, status, response) {
+    document.getElementById('modalId').textContent   = id;
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('statusSelect').value    = status;
+    document.getElementById('responseText').value    = (response === 'Pending') ? '' : response;
+    document.getElementById('respondForm').action    = '/respond/' + id;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+  // Close on backdrop click
+  document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+CMP-TEST|Riya Sharma|riya@email.com|9876543210|Billing & Payments|Incorrect charge on invoice|I was charged twice for my subscription this month. Please check and refund the extra amount.|High|Open|2024-04-07 09:14|Pending
+CMP-SMPL|Arjun Patel|arjun@email.com|9123456789|Technical Issue|App crashes on login|Every time I try to log in through the mobile app it crashes after entering my password. Started 2 days ago.|High|In Progress|2024-04-07 08:40|We have identified the issue in the latest build and are pushing a fix. Expected resolution within 24 hours.CMP-S69O|pushpa|2024510007@student.annauniv.edu|9885883227|Product Defect|gtrs|dgrgh|Low|Open|2026-04-07 18:04|Pending
+CMP-HQKF|pushpa|2024510007@student.annauniv.edu|9885883227|Product Defect|broken|not working properly|Low|Open|2026-04-07 18:12|Pending
+CMP-WATA|pushpa|2024510007@student.annauniv.edu|9885883227|Product Defect|broken|not working properly|Low|Open|2026-04-07 18:15|Pending
+CMP-MQX1|pushpa|2024510007@student.annauniv.edu|9885883227|Technical Issue|broken|retru|Low|Open|2026-04-07 18:57|Pending
+CMP-KW81|pushpa|2024510007@student.annauniv.edu|9885883227|Product Defect|broken|its broken and also not working properly|Medium|Open|2026-04-07 19:04|Pending
+CMP-HD1E|pushpa|2024510007@student.annauniv.edu|9885883227|Product Defect|broken|improper product|Low|Open|2026-04-07 20:23|Pending
+CMP-4EEV|Hanif Suhail|123@gmail.com|9363964369|Staff Behaviour|portion not completed|the teacher still not completed the portion|Medium|Open|2026-04-08 13:24|Pending

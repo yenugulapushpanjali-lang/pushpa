@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartComplaints — Submitted!</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">Smart<span class="gold">Complaints</span></span>
+    </div>
+    <nav class="nav">
+      <a href="/" class="nav-link">Submit</a>
+      <a href="/track" class="nav-link">Track</a>
+      <a href="/admin" class="nav-link">Worker Portal</a>
+    </nav>
+    <div class="server-badge">
+      <span class="dot green-dot"></span> Server 1 — Customer Portal
+    </div>
+  </div>
+</header>
+
+<section class="success-page">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="success-card fade-up">
+    <div class="card-top-line"></div>
+
+    <!-- Success Icon -->
+    <div class="success-icon-wrap">
+      <div class="success-circle">✓</div>
+    </div>
+
+    <h1 class="success-title">Complaint Submitted!</h1>
+    <p class="success-desc">Your complaint has been received and is now being processed on <strong>Server 2</strong>. Use your unique ID below to track its status anytime.</p>
+
+    {% if complaint %}
+    <!-- Complaint ID Box -->
+    <div class="id-box">
+      <div class="id-label">Your Complaint ID</div>
+      <div class="id-value" id="complaintId">{{ complaint.id }}</div>
+      <button class="copy-btn" onclick="copyId()">📋 Copy ID</button>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="detail-grid">
+      <div class="detail-item">
+        <div class="detail-label">Name</div>
+        <div class="detail-value">{{ complaint.name }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Email</div>
+        <div class="detail-value">{{ complaint.email }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Category</div>
+        <div class="detail-value">{{ complaint.category }}</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Priority</div>
+        <div class="detail-value">
+          {% if complaint.priority == 'High' %}
+            <span class="badge badge-high">🔴 High</span>
+          {% elif complaint.priority == 'Medium' %}
+            <span class="badge badge-med">🟡 Medium</span>
+          {% else %}
+            <span class="badge badge-low">🟢 Low</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Status</div>
+        <div class="detail-value"><span class="badge badge-open">● Open</span></div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">Submitted</div>
+        <div class="detail-value">{{ complaint.timestamp }}</div>
+      </div>
+    </div>
+
+    <div class="subject-box">
+      <div class="detail-label">Subject</div>
+      <div class="detail-value">{{ complaint.subject }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="success-actions">
+      <a href="/track?id={{ complaint.id if complaint else '' }}" class="btn-primary">Track My Complaint →</a>
+      <a href="/" class="btn-outline">Submit Another</a>
+    </div>
+
+    <!-- Info Note -->
+    <div class="info-note">
+      💡 Save your Complaint ID <strong>{{ complaint.id if complaint else '' }}</strong> — you'll need it to track your complaint status on Server 2.
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2024 <span class="gold">SmartComplaints</span> — Cloud Computing Project &nbsp;·&nbsp; Flask + Python</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+function copyId() {
+  const id = document.getElementById('complaintId').textContent;
+  navigator.clipboard.writeText(id).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy ID', 2000);
+  });
+}
+</script>
+</body>
+</html>
